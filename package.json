@@ -1,6 +1,6 @@
 {
   "name": "cdn2local",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Converts CDN loaded scrpit and link tags in HTML to load locally",
   "main": "./bin",
   "bin": { "cdn2local": "./bin/cdn2local.js" },

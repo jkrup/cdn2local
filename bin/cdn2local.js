@@ -3,7 +3,6 @@
 var program = require('commander');
 var jsdom = require('jsdom')
 var Download = require('download');
-require('locus')
 
 var path = require('path')
 var fs = require('fs');
