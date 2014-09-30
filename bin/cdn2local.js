@@ -1,20 +1,74 @@
 #!/usr/bin/env node
 
 var program = require('commander');
+var jsdom = require('jsdom')
+var Download = require('download');
 
-program.version('0.0.1');
+var path = require('path')
+var fs = require('fs');
 
-program
-  .command('yo')
-  .description('Hellos the world with a flair')
-  .action(function() {
-    console.log('Yo');
-});
+program.version('0.1.0');
 
 program
-  .command('*')
-  .action(function(env) {
-    console.log('Enter a Valid command');
+.command('*')
+.action(function(file_and_path) {
+  var result;
+  var fap = path.normalize(file_and_path) //TODO: RIGHT NOW ONLY SUPPORTS FILE [NO PATH]
+  result = fap;
+  jsdom.env(
+    fap, 
+    ["http://code.jquery.com/jquery.js"],
+    function(errors,window){
+      var assets_dir = "assets"; //Where to DL assets to
+
+      var replace_with_local = function(tagname, attr, assets_dir, callback) {
+        window.$(tagname).each( function(index, element) {
+          var src = window.$(element).attr(attr).toLowerCase();
+
+          // If no protocol provided use http (to DL)
+          // Also check if local/relative path
+          if(src.split('//').length > 1) {
+            if(src.split('//')[0] === "") {
+              src = 'http:' + src;
+            }
+            else if (!(src.split('//')[0] == "http:" || src.split('//')[0] == "https:")) {
+              return true; //just a relative path with two slashes somewhere (eg. 'test/app//again.js')
+            }
+          }
+          else {
+            return true;
+          }
+          var dest_name = src.split('/')[src.split('/').length-1]
+          var download = new Download({})
+          download.get(src).dest(assets_dir).rename(dest_name).run(function(err, files, stream) {
+            if(err) {
+              console.log( err)
+            }
+            console.log("DL Success!");
+            //Change src to local
+          });
+          console.log("from: " +window.$(element).attr(attr));
+          window.$(element).attr(attr, assets_dir + '/' + dest_name);
+          console.log("to: " + window.$(element).attr(attr));
+        });
+        callback();
+      }
+
+      replace_with_local("script", "src", "assets/js", function() {
+        replace_with_local("link", "href", "assets/css", function() {
+          console.log("Writing...");
+          var faparr = fap.split(".");
+          faparr[faparr.length - 2]= faparr[faparr.length-2] + '-local'
+          var newFap = faparr.join(".");
+          fs.writeFile(newFap, window.$("html").html(), function(err) {
+            if (err) {
+              throw err;
+            }
+            console.log("SAVED");
+          });
+        });
+      });
+    });
 });
 
 program.parse(process.argv);
