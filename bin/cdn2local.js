@@ -3,6 +3,7 @@
 var program = require('commander');
 var jsdom = require('jsdom')
 var Download = require('download');
+require('locus')
 
 var path = require('path')
 var fs = require('fs');
@@ -60,7 +61,10 @@ program
           var faparr = fap.split(".");
           faparr[faparr.length - 2]= faparr[faparr.length-2] + '-local'
           var newFap = faparr.join(".");
-          fs.writeFile(newFap, window.$("html").html(), function(err) {
+          var node = window.document.doctype;
+          var doctype_html = "<!DOCTYPE " + node.name + (node.publicId ? ' PUBLIC "' + node.publicId + '"' : '') + (!node.publicId && node.systemId ? ' SYSTEM' : '') + (node.systemId ? ' "' + node.systemId + '"' : '') + '>';
+
+          fs.writeFile(newFap, doctype_html + window.document.documentElement.outerHTML, function(err) {
             if (err) {
               throw err;
             }
