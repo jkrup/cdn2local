@@ -4,7 +4,9 @@ cdn2local
 
 `cdn2local` automatically downloads externally loaded scripts and stylesheets from an HTML file and creates a new HTML file with '-local' appended to the name to load them locally.
 
--------------------------------
+## Installation
+To install, just run `npm install cdn2local`
+
 ## Usage
 
 ```bash
