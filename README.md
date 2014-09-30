@@ -15,6 +15,7 @@ $ cdn2local [html_file]
 
 **NOTE:** Right now it will only work properly if you run it in the same directory as the file you are trying to convert.
 
+ Running `$ cdn2local index.html` creates the file `index-local.html` in the current directory and will download all external script src's and link href's into directories `assets/js/` and `assets/css` respectively. `index-local.html` will have the same html as index.html, except the externally loaded assets will now have paths to the local files in the `assets` directory.
 
 ## TODO:
 
